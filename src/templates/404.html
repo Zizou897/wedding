@@ -1,0 +1,92 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Page introuvable | Notre mariage</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600&family=Poppins:wght@300;400;500&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #fff5f8, #fdf1f5);
+            font-family: 'Poppins', sans-serif;
+            color: #4a2c2a;
+        }
+
+        .container {
+            text-align: center;
+            padding: 2rem;
+            max-width: 520px;
+            animation: fadeIn 1s ease-in-out;
+        }
+
+        .illustration {
+            font-size: 5rem;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.2rem;
+            margin: 1rem 0 0.5rem;
+        }
+
+        p {
+            font-size: 1rem;
+            line-height: 1.6;
+            margin-bottom: 2rem;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 0.9rem 2rem;
+            background-color: #c94f7c;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 500;
+            transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+        }
+
+        .btn:hover {
+            background-color: #b4436c;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(201, 79, 124, 0.25);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Illustration légère -->
+        <div class="illustration">💍✨</div>
+
+        <h1>Oups… vous vous êtes égaré</h1>
+        <p>
+            Cette page ne fait pas partie de notre histoire d’amour 💕<br>
+            Mais la célébration continue ailleurs.
+        </p>
+
+        <!-- CTA clair -->
+        <a href="{% url 'home' %}" class="btn">Retour à notre mariage</a>
+    </div>
+</body>
+</html>

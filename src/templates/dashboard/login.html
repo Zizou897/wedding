@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Espace Mariés</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600&family=Inter:wght@300;400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+<style>
+html, body {
+	margin: 0;
+	height: 100%;
+	font-family: 'Inter', sans-serif;
+	overflow: hidden;
+}
+
+/* 🌅 Fond vivant plus perceptible */
+body {
+	background: linear-gradient(-45deg, #f6f2eb, #fffaf3, #f1ece3, #ffffff);
+	background-size: 500% 500%;
+	animation: bgMove 15s ease infinite;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+@keyframes bgMove {
+	0% { background-position: 0% 50%; }
+	50% { background-position: 100% 50%; }
+	100% { background-position: 0% 50%; }
+}
+
+/* ✨ Particules dorées */
+.particle {
+	position: absolute;
+	width: 10px;
+	height: 10px;
+	background: radial-gradient(circle, rgba(212,175,55,0.9), transparent 70%);
+	border-radius: 50%;
+	filter: blur(0.5px);
+	animation: float 10s infinite ease-in-out;
+	opacity: 0.6;
+}
+
+@keyframes float {
+	0% {
+		transform: translateY(0) scale(1) rotate(0deg);
+		opacity: 0;
+	}
+	30% { opacity: 0.6; }
+	100% {
+		transform: translateY(-110vh) scale(0.4) rotate(180deg);
+		opacity: 0;
+	}
+}
+
+/* 💍 Carte avec lueur */
+.card {
+	background: rgba(255,255,255,0.94);
+	backdrop-filter: blur(12px);
+	padding: 60px 50px;
+	border-radius: 22px;
+	width: 100%;
+	max-width: 430px;
+	text-align: center;
+	box-shadow:
+		0 40px 80px rgba(0,0,0,0.08),
+		0 0 30px rgba(212,175,55,0.25);
+	animation: appear 1s ease;
+	position: relative;
+}
+
+@keyframes appear {
+	from { opacity: 0; transform: translateY(35px); }
+	to { opacity: 1; transform: translateY(0); }
+}
+
+.heart {
+	font-size: 34px;
+	color: #d4af37;
+	margin-bottom: 14px;
+	animation: pulse 2.2s infinite;
+}
+
+@keyframes pulse {
+	0%,100% { transform: scale(1); }
+	50% { transform: scale(1.18); }
+}
+
+h1 {
+	font-family: 'Playfair Display', serif;
+	font-size: 30px;
+	margin-bottom: 8px;
+	color: #1f1f1f;
+}
+
+.subtitle {
+	font-size: 14px;
+	color: #666;
+	margin-bottom: 38px;
+}
+
+/* 🔐 Input */
+input {
+	width: 100%;
+	padding: 17px;
+	border-radius: 12px;
+	border: 1px solid #ccc;
+	font-size: 15px;
+	outline: none;
+	text-align: center;
+}
+
+input:focus {
+	border-color: #000;
+}
+
+/* 🚪 Bouton noir mariage */
+button {
+	margin-top: 24px;
+	width: 100%;
+	padding: 16px;
+	border-radius: 12px;
+	border: none;
+	background: #000;
+	color: #fff;
+	font-size: 15px;
+	letter-spacing: 0.5px;
+	cursor: pointer;
+	transition: all 0.3s ease;
+}
+
+button:hover {
+	background: #111;
+	box-shadow: 0 15px 35px rgba(0,0,0,0.45),
+	            0 0 15px rgba(212,175,55,0.35);
+	transform: translateY(-2px);
+}
+
+.poetry {
+	margin-top: 32px;
+	font-size: 12px;
+	color: #999;
+	font-style: italic;
+}
+
+.error {
+	color: #c0392b;
+	font-size: 13px;
+	margin-bottom: 12px;
+}
+</style>
+</head>
+
+<body>
+
+<!-- ✨ Particules -->
+<div class="particle" style="left:8%; animation-delay:0s;"></div>
+<div class="particle" style="left:25%; animation-delay:3s;"></div>
+<div class="particle" style="left:42%; animation-delay:1s;"></div>
+<div class="particle" style="left:60%; animation-delay:5s;"></div>
+<div class="particle" style="left:78%; animation-delay:2s;"></div>
+<div class="particle" style="left:92%; animation-delay:6s;"></div>
+
+<div class="card">
+	<div class="heart">💍</div>
+	<h1>Espace des Mariés</h1>
+	<div class="subtitle">
+		Un espace intime pour organiser<br>le plus beau jour de votre vie
+	</div>
+
+	{% if messages %}
+		{% for message in messages %}
+			<div class="error">{{ message }}</div>
+		{% endfor %}
+	{% endif %}
+
+	<form method="post">
+		{% csrf_token %}
+		<input type="password" name="password" placeholder="Mot de passe privé">
+		<button type="submit">Entrer</button>
+	</form>
+
+	<div class="poetry">
+		« L’amour commence ici »
+	</div>
+</div>
+
+</body>
+</html>

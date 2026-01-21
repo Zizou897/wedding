@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Dashboard Mariés</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&family=Playfair+Display:wght@600&display=swap" rel="stylesheet">
+
+<style>
+body {
+	margin: 0;
+	font-family: 'Inter', sans-serif;
+	background: #f6f6f6;
+	color: #1f1f1f;
+}
+
+/* HEADER */
+.header {
+	background: #fff;
+	padding: 20px;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	border-bottom: 1px solid #eaeaea;
+}
+
+.header h1 {
+	font-family: 'Playfair Display', serif;
+	font-size: 22px;
+	margin: 0;
+}
+
+.logout {
+	text-decoration: none;
+	color: #000;
+	font-size: 14px;
+}
+
+/* CONTAINER */
+.container {
+	padding: 20px;
+	max-width: 1200px;
+	margin: auto;
+}
+
+/* STATS */
+.stats {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+	gap: 15px;
+	margin-bottom: 25px;
+}
+
+.stat-card {
+	background: #fff;
+	border-radius: 14px;
+	padding: 18px;
+	box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+}
+
+.stat-card h3 {
+	font-size: 13px;
+	color: #777;
+	margin-bottom: 6px;
+}
+
+.stat-card .number {
+	font-size: 26px;
+	font-weight: 500;
+}
+
+/* TABLE */
+.table-card {
+	background: #fff;
+	border-radius: 14px;
+	padding: 20px;
+	box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+	overflow-x: auto;
+}
+
+table {
+	width: 100%;
+	border-collapse: collapse;
+}
+
+th, td {
+	text-align: left;
+	padding: 12px;
+	font-size: 14px;
+	border-bottom: 1px solid #eee;
+}
+
+th {
+	font-weight: 500;
+	color: #666;
+}
+
+.status {
+	font-size: 12px;
+	padding: 5px 10px;
+	border-radius: 20px;
+	display: inline-block;
+}
+
+.present {
+	background: #eaf7ef;
+	color: #2e7d32;
+}
+
+.absent {
+	background: #fdecea;
+	color: #c62828;
+}
+
+.filter-btn {
+	padding: 8px 14px;
+	border: 1px solid #ddd;
+	background: #fff;
+	cursor: pointer;
+	font-size: 13px;
+	border-radius: 6px;
+}
+
+.filter-btn.active {
+	background: #000;
+	color: #fff;
+	border-color: #000;
+}
+
+
+.dashboard-footer {
+    margin-top: 3rem;
+    padding: 1rem 1.5rem;
+    background: #ffffffff;
+    border-top: 1px solid #eee;
+    text-align: center;
+    font-size: 0.9rem;
+    color: #555;
+}
+
+.dashboard-footer p {
+    margin: 0.3rem 0;
+}
+
+.export-buttons a {
+    text-decoration: none;
+    margin-right: 10px;
+    padding: 6px 14px;
+    border-radius: 5px;
+    color: #fff;
+    font-size: 0.85rem;
+    transition: 0.3s;
+}
+
+.export-buttons a.btn-success { background: #28a745; }
+.export-buttons a.btn-success:hover { background: #218838; }
+
+.export-buttons a.btn-danger { background: #dc3545; }
+.export-buttons a.btn-danger:hover { background: #c82333; }
+
+
+.view-message-btn {
+    padding: 4px 10px;
+    font-size: 0.8rem;
+    border: 1px solid #000;
+    border-radius: 6px;
+    background: #fff;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.view-message-btn:hover {
+    background: #000;
+    color: #fff;
+}
+
+.swal2-popup-custom {
+    font-family: 'Helvetica', sans-serif;
+    font-size: 1rem;
+    color: #333;
+    border-radius: 12px;
+}
+
+
+/* RESPONSIVE */
+@media(max-width: 600px) {
+	th, td {
+		font-size: 13px;
+	}
+}
+</style>
+</head>
+
+<body>
+
+<div class="header">
+	<h1>Gio & Nadège</h1>
+	<a href="{% url 'brideGroom:logout' %}" class="logout">Déconnexion</a>
+</div>
+
+<div class="container">
+
+	<!-- STATS -->
+	<div class="stats">
+		<div class="stat-card">
+			<h3>Invités présents</h3>
+			<div class="number">{{ stats.total_presents }}</div>
+		</div>
+		<div class="stat-card">
+			<h3>Absents</h3>
+			<div class="number">{{ stats.total_absents }}</div>
+		</div>
+		<div class="stat-card">
+			<h3>Total personnes</h3>
+			<div class="number">{{ stats.total_rsvps }}</div>
+		</div>
+	</div>
+
+
+    <div class="table-card" style="margin-bottom:25px;">
+	<h3 style="margin-bottom:15px;">Aperçu des confirmations</h3>
+	<canvas id="rsvpChart" height="100"></canvas>
+</div>
+
+
+	<!-- LISTE -->
+	<div class="table-card">
+		<h3 style="margin-bottom:15px;">Liste des invités</h3>
+
+        <div class="export-buttons" style="margin-bottom:15px;">
+            <a href="{% url 'brideGroom:export_rsvps_excel' %}" class="btn btn-success">Exporter Excel</a>
+            <a href="{% url 'brideGroom:export_rsvps_pdf' %}" class="btn btn-danger">Exporter PDF</a>
+        </div>
+
+        <div class="table-card" style="margin-bottom:20px;">
+	    <div style="display:flex; flex-wrap:wrap; gap:10px; align-items:center;">
+
+		<input
+			type="text"
+			id="searchInput"
+			placeholder="Rechercher un invité..."
+			style="flex:1; padding:8px 12px;"
+		/>
+
+		<button class="filter-btn active" data-filter="all">Tous</button>
+		<button class="filter-btn" data-filter="present">Présents</button>
+		<button class="filter-btn" data-filter="absent">Absents</button>
+
+	</div>
+</div>
+
+
+		<table>
+			<thead>
+				<tr>
+					<th>Nom</th>
+					<th>Téléphone</th>
+					<th>Invités</th>
+					<th>Statut</th>
+                    <th>Message</th>
+				</tr>
+			</thead>
+			<tbody>
+                {% for rsvp in rsvps %}
+				<tr data-status="{% if rsvp.is_present %}present{% else %}absent{% endif %}"
+	                data-search="{{ rsvp.full_name|lower }} {{ rsvp.phone|lower }}">
+					<td>{{ rsvp.full_name }}</td>
+					<td>{{ rsvp.phone }}</td>
+					<td>{{ rsvp.guests_count }} </td>
+					<td>
+                        {% if rsvp.is_present %}
+                            <span class="status present">Présent</span>
+                        {% else %}
+                            <span class="status absent">Absent</span>
+                        {% endif %}
+                    </td>
+                     <td>
+                        {% if rsvp.message %}
+                        <button class="view-message-btn" data-message="{{ rsvp.message|escape }}" data-name="{{ rsvp.full_name|escape }}">
+                            Voir message
+                        </button>
+                        {% else %}
+                        -
+                        {% endif %}
+                    </td>
+				</tr>
+                {% empty %}
+                <tr>
+                    <td colspan="4"  style="text-align:center;color:#999;">Aucun invité n'a encore répondu.</td>
+                </tr>
+                {% endfor %}
+			</tbody>
+		</table>
+	</div>
+
+</div>
+<footer class="dashboard-footer">
+    <div class="footer-content">
+        <p>
+            &copy; Gio & Nadège — Merci de partager ce moment spécial avec nous ❤️
+        </p>
+        <p>
+            Crée par The Tiger Group pour un mariage digital
+        </p>
+    </div>
+</footer>
+
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+	const ctx = document.getElementById('rsvpChart').getContext('2d');
+
+	new Chart(ctx, {
+		type: 'doughnut',
+		data: {
+			labels: ['Présents', 'Absents'],
+			datasets: [{
+				data: [
+				{{ stats.total_presents }},
+                {{ stats.total_absents }},
+				],
+				backgroundColor: [
+				'rgba(75, 192, 192, 0.5)',
+                'rgba(255, 99, 132, 0.5)',
+				],
+				borderWidth: 0
+			}]
+		},
+		options: {
+			responsive: true,
+			cutout: '65%',
+			plugins: {
+				legend: {
+					position: 'bottom',
+					labels: {
+						boxWidth: 12,
+						font: { size: 12 }
+					}
+				}
+			}
+		}
+	});
+</script>
+<script>
+	const searchInput = document.getElementById("searchInput");
+	const filterButtons = document.querySelectorAll(".filter-btn");
+	const rows = document.querySelectorAll("tbody tr");
+
+	let activeFilter = "present";
+
+	function applyFilters() {
+		const searchValue = searchInput.value.toLowerCase();
+
+		rows.forEach(row => {
+			const status = row.dataset.status;
+			const searchText = row.dataset.search;
+
+			const matchesStatus =
+				activeFilter === "all" || status === activeFilter;
+
+			const matchesSearch =
+				searchText.includes(searchValue);
+
+			row.style.display =
+				matchesStatus && matchesSearch ? "" : "none";
+		});
+	}
+
+	filterButtons.forEach(btn => {
+		btn.addEventListener("click", () => {
+			filterButtons.forEach(b => b.classList.remove("active"));
+			btn.classList.add("active");
+
+			activeFilter = btn.dataset.filter;
+			applyFilters();
+		});
+	});
+
+	searchInput.addEventListener("input", applyFilters);
+</script>
+<script>
+document.querySelectorAll(".view-message-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+        const message = btn.dataset.message;
+         const name = btn.dataset.name;
+
+        Swal.fire({
+            title: 'Message de ' + name,
+            text: message,
+            icon: 'info',
+            confirmButtonText: 'Fermer',
+            customClass: {
+                popup: 'swal2-popup-custom'
+            }
+        });
+    });
+});
+</script>
+
+
+
+</body>
+</html>

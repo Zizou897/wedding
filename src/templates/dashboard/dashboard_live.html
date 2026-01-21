@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Dashboard – Arrivées en direct</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f7f7f7;
+      margin: 0;
+      padding: 1rem;
+    }
+    .stats {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    .card {
+      flex: 1;
+      background: white;
+      padding: 1rem;
+      border-radius: 10px;
+      text-align: center;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+    }
+    .card h2 {
+      margin: 0;
+      font-size: 2rem;
+    }
+    .arrived { color: green; }
+    .pending { color: orange; }
+
+    ul {
+      list-style: none;
+      padding: 0;
+    }
+    li {
+      background: white;
+      padding: 0.8rem;
+      margin-bottom: 0.5rem;
+      border-radius: 6px;
+      display: flex;
+      justify-content: space-between;
+    }
+  </style>
+</head>
+
+<body>
+
+<h1>🎉 Arrivées en direct</h1>
+
+<div class="stats">
+  <div class="card">
+    <p>Total invités</p>
+    <h2 id="total">0</h2>
+  </div>
+  <div class="card">
+    <p>Arrivés</p>
+    <h2 class="arrived" id="arrived">0</h2>
+  </div>
+  <div class="card">
+    <p>En attente</p>
+    <h2 class="pending" id="pending">0</h2>
+  </div>
+</div>
+
+<h3>Dernières arrivées</h3>
+<ul id="arrival-list"></ul>
+
+<script>
+function fetchLiveData() {
+  fetch("{% url 'brideGroom:dashboard_live_data' %}")
+    .then(res => res.json())
+    .then(data => {
+      document.getElementById("total").textContent = data.total;
+      document.getElementById("arrived").textContent = data.arrived;
+      document.getElementById("pending").textContent = data.pending;
+
+      const list = document.getElementById("arrival-list");
+      list.innerHTML = "";
+
+      data.arrivals.forEach(item => {
+        const li = document.createElement("li");
+        li.innerHTML = `
+          <strong>${item.name}</strong>
+          <span>${item.guests} pers · ${item.time}</span>
+        `;
+        list.appendChild(li);
+      });
+    });
+}
+
+// Rafraîchissement toutes les 3 secondes
+setInterval(fetchLiveData, 3000);
+fetchLiveData();
+</script>
+
+</body>
+</html>

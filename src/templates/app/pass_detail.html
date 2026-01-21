@@ -1,0 +1,68 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Pass Mariage – {{ invitation.couple_name }}</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600&family=Poppins:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'app/css/pass.css' %}">
+</head>
+
+<body>
+  
+
+  <div class="pass-wrapper">
+    <div class="pass-card">
+
+      <div class="pass-header">
+        <h1>{{ invitation.couple_name }}</h1>
+        <p>Invitation officielle</p>
+      </div>
+
+      <div class="pass-section">
+        <span class="label">Invité</span>
+        <strong>{{ rsvp.full_name }}</strong>
+      </div>
+
+      <div class="pass-section two-cols">
+        <div>
+          <span class="label">Date</span>
+          <strong>{{ invitation.event_date }}</strong>
+        </div>
+        <div>
+          <span class="label">Table</span>
+          <strong>Table {{ rsvp.table_number }}</strong>
+        </div>
+      </div>
+
+      <div class="pass-section">
+        <span class="label">Nombre d’invités</span>
+        <strong>{{ rsvp.guests_count }}</strong>
+      </div>
+
+      <div class="qr-section">
+        <img src="{{ rsvp.qr_code.url }}" alt="QR Code Pass">
+      </div>
+
+      <div class="status {{ status_class }}">
+        {{ rsvp.is_present|yesno:"Présence confirmée,Absence enregistrée" }}
+      </div>
+
+      {% if rsvp.message %}
+      <div class="message">
+        “{{ rsvp.message }}”
+      </div>
+      {% endif %}
+
+      <div class="pass-footer">
+        <span>💍 À très bientôt pour célébrer ensemble</span>
+        <a href="{% url 'pass_pdf' rsvp.token %}" class="btn btn-dark">
+    Télécharger mon pass (PDF)
+  </a>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>
